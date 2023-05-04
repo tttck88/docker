@@ -41,7 +41,7 @@ services:
     # 하나의 네트워크로 통신하기 위해 현재 elastic으로 모두 지정
     # driver : bridge, host, container, none 이렇게 4개가 존재함 (default는 bridge)
     networks:
-      - elastic
+      - docker_net
   es02:
     # image: 'docker.elastic.co/elasticsearch/elasticsearch:7.7.1'
     build:
@@ -65,7 +65,7 @@ services:
     volumes:
       - data02:/usr/share/elasticsearch/data
     networks:
-      - elastic
+      - docker_net
   es03:
     # image: 'docker.elastic.co/elasticsearch/elasticsearch:7.7.1'
     build:
@@ -89,7 +89,7 @@ services:
     volumes:
       - data03:/usr/share/elasticsearch/data
     networks:
-      - elastic
+      - docker_net
 
   kib01:
     #  키바나 공식 이미지 사용 (엘라스틱과 버전 동일)
@@ -104,7 +104,32 @@ services:
       ELASTICSEARCH_HOSTS: http://es01:9200
     # 다른 엘라스틱 컨테이너와 동일 한 네트워크 설정
     networks:
-      - elastic
+      - docker_net
+
+  mysql:
+    # 사용할 이미지
+    image: mysql:8.0
+    # 컨테이너 실행 시 재시작
+    restart: always
+    # 컨테이너명 설정
+    container_name: mysql
+    # 접근 포트 설정 (컨테이너 외부:컨테이너 내부)
+    ports:
+      - "3306:3306"
+    # 환경 변수 설정
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: review
+      MYSQL_USER: user
+      MYSQL_PASSWORD: password
+      TZ: Asia/Seoul
+    # 볼륨 설정
+    volumes:
+      - ./db/mysql/data:/var/lib/mysql
+      - ./db/mysql/config:/etc/mysql/conf.d
+      - ./db/mysql/init:/docker-entrypoint-initdb.d
+    networks:
+      - docker_net
 
 volumes:
   data01:
@@ -115,5 +140,5 @@ volumes:
     driver: local
 
 networks:
-  elastic:
+  docker_net:
     driver: bridge
