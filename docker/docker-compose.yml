@@ -121,7 +121,7 @@ services:
       MYSQL_ROOT_PASSWORD: root
       MYSQL_DATABASE: review
       MYSQL_USER: user
-      MYSQL_PASSWORD: password
+      MYSQL_PASSWORD: Abcd123@
       TZ: Asia/Seoul
     # 볼륨 설정
     volumes:
